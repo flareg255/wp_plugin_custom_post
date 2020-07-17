@@ -5,44 +5,49 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class CustomPostType{
 
     public function init() {
-        add_action('init',  array( $this, 'create_post_type' ));
+        add_action( 'init',  array( $this, 'create_post_type' ) );
+        add_action( 'init', array( $this, 'template_settings') );
     }
 
     public function create_post_type() {
-        //カスタム投稿タイプがダッシュボードの編集画面で使用する項目を配列で用意
-        $supports = array(
-            'title',
-            'editor',
-            'author',
-            'thumbnail',
-            'revisions'
+
+        $args = array(
+            'public' => true,
+            'label'  => 'Books',
+            'show_in_rest' => true,
+            'template' => array(
+                array( 'core/image', array(
+                    'align' => 'left',
+                ) ),
+                array( 'core/heading', array(
+                    'placeholder' => 'Add Author...',
+                ) ),
+                array( 'core/paragraph', array(
+                    'placeholder' => 'Add Description...',
+                ) ),
+            ),
+            'template_lock' => 'all'
         );
-        //カスタム投稿タイプを追加するための関数
-        //第一引数は任意のカスタム投稿タイプ名
-        register_post_type('hoge_custom_post',
-            array(
-                'label' => '自作', //表示名
-                'public'        => true, //公開状態
-                'exclude_from_search' => true, //検索対象に含めるか
-                'show_ui' => true, //管理画面に表示するか
-                'show_in_menu' => true, //管理画面のメニューに表示するか
-                'menu_position' => 5, //管理メニューの表示位置を指定
-                'hierarchical' => true, //階層構造を持たせるか
-                'has_archive'   => true, //この投稿タイプのアーカイブを作成するか
-                'supports' => array(
-                    'title',
-                    'editor',
-                    'comments',
-                    'excerpt',
-                    'thumbnail',
-                    'custom-fields',
-                    'post-formats',
-                    'page-attributes',
-                    'trackbacks',
-                    'revisions',
-                    'author'
-                )
-            )
+
+        register_post_type( 'book', $args );
+    }
+
+    function template_settings() {
+
+        $post_type_object = get_post_type_object( 'book' );
+        $post_type_object->template = array(
+            array( 'core/image', array(
+                'align' => 'left'
+            ) ),
+            array( 'core/heading', array(
+                'placeholder' => 'Add Author...'
+            ) ),
+            array( 'core/paragraph', array(
+                'placeholder' => 'Add Description...'
+            ) ),
         );
+
+        $post_type_object->template_lock = 'all';
+
     }
 }

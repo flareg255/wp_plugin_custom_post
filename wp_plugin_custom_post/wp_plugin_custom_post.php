@@ -25,8 +25,13 @@ Copyright 2020 geregere (email : info@ultrazone.blue)
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once(dirname(__FILE__) . '/classes/post_type/post_type1.php');
+// require_once(dirname(__FILE__) . '/classes/post_type/post_type1.php');
 
-$post_type = new post_type1();
-$post_type->init();
+// $post_type = new post_type1();
+// $post_type->init();
+
+require_once(dirname(__FILE__) . '/classes/custom_post_type.php');
+
+$post_type2 = new CustomPostType();
+$post_type2->init();
 
