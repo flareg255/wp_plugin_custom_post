@@ -6,11 +6,37 @@ require_once(dirname(__FILE__) . '/../custom_post_type.php');
 
 class post_type1 extends CustomPostType {
 
+    const SUPPORTS = array( 'title', 'thumbnail', 'custom-fields' );
+
     public function init() {
-        parent::init();
+        add_action('init',  array( $this, 'create_post_type', 10, $supports_ary));
+        parent::init( self::SUPPORTS );
         add_action( 'admin_menu', array( $this, 'add_custom_fields' ) );
         add_action( 'post_edit_form_tag', array( $this, 'custom_metabox_edit_form_tag' ) );
         add_action( 'save_post', array( $this, 'save_custom_fields' ) );
+        // add_action( 'init' , array( $this, 'my_remove_post_editor_support' ) ); 通常の投稿入力欄非表示
+    }
+
+    // public function my_remove_post_editor_support() {
+    //     remove_post_type_support( 'post', 'editor' );
+    // }
+
+    public function create_post_type($supports_ary) {
+        //カスタム投稿タイプを追加するための関数
+        //第一引数は任意のカスタム投稿タイプ名
+        register_post_type('hoge_custom_post',
+            array(
+                'label' => '自作', //表示名
+                'public' => true, //公開状態
+                'exclude_from_search' => true, //検索対象に含めるか
+                'show_ui' => true, //管理画面に表示するか
+                'show_in_menu' => true, //管理画面のメニューに表示するか
+                'menu_position' => 5, //管理メニューの表示位置を指定
+                'hierarchical' => true, //階層構造を持たせるか
+                'has_archive' => true, //この投稿タイプのアーカイブを作成するか
+                'supports' => $supports_ary
+            )
+        );
     }
 
     public function add_custom_fields() {
@@ -34,7 +60,7 @@ class post_type1 extends CustomPostType {
                          $post->ID, //投稿ID
                          'hoge_name', //キー名
                          true //戻り値を文字列にする場合true(falseの場合は配列)
-                     );
+                    );
         $hoge_thumbnail = get_post_meta($post->ID,'hoge_thumbnail',true);
         echo '名前： <input type="text" name="hoge_name" value="'.$hoge_name.'" /><br>';
         echo '画像： <input type="file" name="hoge_thumbnail" accept="image/*" /><br>';
