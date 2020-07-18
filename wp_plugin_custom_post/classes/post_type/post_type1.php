@@ -2,15 +2,22 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once(dirname(__FILE__) . '/../custom_post_type.php');
+class Post_type1 {
 
-class post_type1 extends CustomPostType {
-
-    const SUPPORTS = array( 'title', 'thumbnail', 'custom-fields' );
+    const POST_TYPE_PROP = array(
+        'label' => '自作', //表示名
+        'public' => true, //公開状態
+        'exclude_from_search' => true, //検索対象に含めるか
+        'show_ui' => true, //管理画面に表示するか
+        'show_in_menu' => true, //管理画面のメニューに表示するか
+        'menu_position' => 5, //管理メニューの表示位置を指定
+        'hierarchical' => true, //階層構造を持たせるか
+        'has_archive' => true, //この投稿タイプのアーカイブを作成するか
+        'supports' => array( 'title', 'thumbnail', 'custom-fields' )
+    );
 
     public function init() {
-        add_action('init',  array( $this, 'create_post_type', 10, $supports_ary));
-        parent::init( self::SUPPORTS );
+        add_action('init',  array( $this, 'create_post_type'));
         add_action( 'admin_menu', array( $this, 'add_custom_fields' ) );
         add_action( 'post_edit_form_tag', array( $this, 'custom_metabox_edit_form_tag' ) );
         add_action( 'save_post', array( $this, 'save_custom_fields' ) );
@@ -21,22 +28,8 @@ class post_type1 extends CustomPostType {
     //     remove_post_type_support( 'post', 'editor' );
     // }
 
-    public function create_post_type($supports_ary) {
-        //カスタム投稿タイプを追加するための関数
-        //第一引数は任意のカスタム投稿タイプ名
-        register_post_type('hoge_custom_post',
-            array(
-                'label' => '自作', //表示名
-                'public' => true, //公開状態
-                'exclude_from_search' => true, //検索対象に含めるか
-                'show_ui' => true, //管理画面に表示するか
-                'show_in_menu' => true, //管理画面のメニューに表示するか
-                'menu_position' => 5, //管理メニューの表示位置を指定
-                'hierarchical' => true, //階層構造を持たせるか
-                'has_archive' => true, //この投稿タイプのアーカイブを作成するか
-                'supports' => $supports_ary
-            )
-        );
+    public function create_post_type() {
+        register_post_type('hoge_custom_post', self::POST_TYPE_PROP);
     }
 
     public function add_custom_fields() {
