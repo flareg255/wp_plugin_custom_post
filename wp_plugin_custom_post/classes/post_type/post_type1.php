@@ -16,9 +16,17 @@ class Post_type1 {
         'supports' => array( 'title', 'thumbnail', 'custom-fields' )
     );
 
+    const TAXONOMY_PROP = array(
+        'label' => 'テストタクソノミー',  // 管理画面上に表示される名前（投稿で言うカテゴリー）
+        'labels' => array(
+            'all_items' => 'タクソノミー一覧',  // 投稿画面の右カラムに表示されるテキスト（投稿で言うカテゴリー一覧）
+            'add_new_item' => '新規タクソノミーを追加'  // 投稿画面の右カラムに表示されるカテゴリ追加リンク
+        ),
+        'hierarchical' => true  // タクソノミーを階層化するか否か（子カテゴリを作れるか否か）
+    );
+
     public function init() {
         add_action( 'init', array( $this, 'create_post_type' ) );
-        add_action( 'init', array( $this, 'create_taxonomy' ) );
         add_action( 'admin_menu', array( $this, 'add_custom_fields' ) );
         add_action( 'post_edit_form_tag', array( $this, 'custom_metabox_edit_form_tag' ) );
         add_action( 'save_post', array( $this, 'save_custom_fields' ) );
@@ -32,6 +40,12 @@ class Post_type1 {
 
     public function create_post_type() {
         register_post_type('hoge_custom_post', self::POST_TYPE_PROP);
+
+        register_taxonomy(
+            'example_taxonomy',  // 追加するタクソノミー名（英小文字とアンダースコアのみ）
+            'example',  // どのカスタム投稿タイプに追加するか
+            self::TAXONOMY_PROP
+        );
     }
 
     public function add_custom_fields() {
@@ -117,25 +131,4 @@ class Post_type1 {
         }
     }
 
-    public function create_taxonomy(){
-        //カスタム投稿タイプがダッシュボードの編集画面で使用する項目を配列で用意
-        $supports = array(
-            'title',
-            'editor',
-            'author',
-            'thumbnail',
-            'revisions'
-        );
-        //カスタム投稿タイプを追加するための関数
-        //第一引数は任意のカスタム投稿タイプ名
-        register_post_type('hoge_custom_post',
-            array(
-            'label' => 'サンプルカスタム投稿',
-            'public' => true, //フロントエンド上で公開する場合true
-            'has_archive' => true, //アーカイブページを表示したい場合true
-            'menu_position' => 3, //メニューを表示させる場所
-            'supports' => $supports //ダッシュボードの編集画面で使用する項目
-            )
-        );
-    }
 }
