@@ -17,10 +17,12 @@ class Post_type1 {
     );
 
     public function init() {
-        add_action('init',  array( $this, 'create_post_type'));
+        add_action( 'init', array( $this, 'create_post_type' ) );
+        add_action( 'init', array( $this, 'create_taxonomy' ) );
         add_action( 'admin_menu', array( $this, 'add_custom_fields' ) );
         add_action( 'post_edit_form_tag', array( $this, 'custom_metabox_edit_form_tag' ) );
         add_action( 'save_post', array( $this, 'save_custom_fields' ) );
+
         // add_action( 'init' , array( $this, 'my_remove_post_editor_support' ) ); 通常の投稿入力欄非表示
     }
 
@@ -113,5 +115,27 @@ class Post_type1 {
                 exit;
             }
         }
+    }
+
+    public function create_taxonomy(){
+        //カスタム投稿タイプがダッシュボードの編集画面で使用する項目を配列で用意
+        $supports = array(
+            'title',
+            'editor',
+            'author',
+            'thumbnail',
+            'revisions'
+        );
+        //カスタム投稿タイプを追加するための関数
+        //第一引数は任意のカスタム投稿タイプ名
+        register_post_type('hoge_custom_post',
+            array(
+            'label' => 'サンプルカスタム投稿',
+            'public' => true, //フロントエンド上で公開する場合true
+            'has_archive' => true, //アーカイブページを表示したい場合true
+            'menu_position' => 3, //メニューを表示させる場所
+            'supports' => $supports //ダッシュボードの編集画面で使用する項目
+            )
+        );
     }
 }
