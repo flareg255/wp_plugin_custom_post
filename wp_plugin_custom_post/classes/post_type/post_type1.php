@@ -16,14 +16,32 @@ class Post_type1 {
         'supports' => array( 'title', 'thumbnail', 'custom-fields' )
     );
 
-    const TAXONOMY_PROP = array(
-        'label' => 'テストタクソノミー',  // 管理画面上に表示される名前（投稿で言うカテゴリー）
+    const TAXONOMY_PROP_CAT = array(
+        'label' => 'お知らせカテゴリ',
+        'singular_label' => 'お知らせカテゴリ',
         'labels' => array(
-            'all_items' => 'タクソノミー一覧',  // 投稿画面の右カラムに表示されるテキスト（投稿で言うカテゴリー一覧）
-            'add_new_item' => '新規タクソノミーを追加'  // 投稿画面の右カラムに表示されるカテゴリ追加リンク
+            'all_items' => 'お知らせカテゴリ一覧',
+            'add_new_item' => 'お知らせカテゴリを追加'
         ),
-        'hierarchical' => true  // タクソノミーを階層化するか否か（子カテゴリを作れるか否か）
+        'public' => true,
+        'show_ui' => true,
+        'show_in_nav_menus' => true,
+        'hierarchical' => true
     );
+
+    const TAXONOMY_PROP_TAG =array(
+        'label' => 'お知らせのタグ',
+        'singular_label' => 'お知らせのタグ',
+        'labels' => array(
+            'add_new_item' => 'お知らせのタグを追加'
+        ),
+        'public' => true,
+        'show_ui' => true,
+        'show_in_nav_menus' => true,
+        'hierarchical' => false
+    );
+
+
 
     public function init() {
         add_action( 'init', array( $this, 'create_post_type' ) );
@@ -41,11 +59,23 @@ class Post_type1 {
     public function create_post_type() {
         register_post_type('hoge_custom_post', self::POST_TYPE_PROP);
 
+        //お知らせカテゴリ
         register_taxonomy(
-            'example_taxonomy',  // 追加するタクソノミー名（英小文字とアンダースコアのみ）
-            'example',  // どのカスタム投稿タイプに追加するか
-            self::TAXONOMY_PROP
+            'info-cat',
+            'infopage',
+            self::TAXONOMY_PROP_CAT
         );
+            //お知らせタグ
+        register_taxonomy(
+            'info-tag',
+            'infopage',
+            self::TAXONOMY_PROP_TAG
+        );
+
+        //カテゴリを投稿と共通設定にする
+        register_taxonomy_for_object_type('category', 'infopage');
+        //タグを投稿と共通設定にする
+        register_taxonomy_for_object_type('post_tag', 'infopage');
     }
 
     public function add_custom_fields() {
